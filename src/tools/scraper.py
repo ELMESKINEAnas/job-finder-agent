@@ -37,6 +37,40 @@ def get_access_token () -> str :
     
 token = get_access_token()
 
-print(f'your token is {token}')
 
+# print(f'your token is {token}')
+
+def search_job_offer (keywords : str, location : str) -> list[str] :
+
+    url = "https://api.francetravail.io/partenaire/offresdemploi/v2/offres/search"
+    if not token:
+        return []
     
+    headers = {
+        "Authorization" : f"Bearer {token}",
+        "Accept" : "application/json"
+    }
+    params = {
+        "motsCles" : f"{keywords} {location}".strip(),
+        "range" : "0-9" #to return up to 10 results
+    }
+    try:
+        response = requests.get(url, headers=headers, params=params) 
+        response.raise_for_status()
+        data = response.json()
+
+        results = []
+
+        for offer in data.get("resultats", []):
+            text = (
+                f"title : {offer.get('intitule', '')}\n"
+                f"Company : {offer.get('entreprise',{}).get('nom','N/A')}\n"
+                f"Description : {offer.get('description','')}"
+            )
+            results.append(text)
+        return results
+    except requests.exceptions.RequestException as e :
+        print(f'An error occured {e}')
+        return None
+    
+
