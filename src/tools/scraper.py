@@ -74,3 +74,9 @@ def search_job_offer (keywords : str, location : str) -> list[str] :
         return None
     
 
+token = get_access_token()
+offers = search_job_offer("php developer", "Paris")
+print(f"Nombre d'offres trouvées : {len(offers)}")
+for offer in offers:
+    print("---")
+    print(offer)
